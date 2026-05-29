@@ -128,9 +128,9 @@ your-submission/
 
 ## Live debrief
 
-After submission, we will schedule a **45-minute video call**. You'll walk us
-through your solution, we'll ask you to extend or modify a piece live, and
-we'll discuss your AI log. Bring your laptop.
+After submission, we will allocate **30-minutes** during your first round interview
+to walk us through your solution, we might ask you to extend or modify a piece live, and
+we'll discuss your AI log.
 
 The debrief is where we calibrate the take-home against the live signal. We
 take it seriously and so should you.
