@@ -1,0 +1,21 @@
+name: helix_lending_dbt
+version: "1.0.0"
+config-version: 2
+
+profile: helix_lending
+
+model-paths: ["models"]
+analysis-paths: ["reports"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  helix_lending_dbt:
+    staging:
+      +materialized: view
+      +schema: staging
+    marts:
+      +materialized: table
+      +schema: analytics

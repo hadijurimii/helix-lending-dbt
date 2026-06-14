@@ -1,0 +1,15 @@
+services:
+  helix-pipeline:
+    build: .
+    command: python main.py
+    volumes:
+      - ./output:/app/output
+
+  dbt:
+    build: .
+    command: dbt run --profiles-dir . --project-dir .
+    depends_on:
+      - helix-pipeline
+    volumes:
+      - ./output:/app/output
+      - ./target:/app/target

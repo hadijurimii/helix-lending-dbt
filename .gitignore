@@ -1,3 +1,7 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
+.user.yml
+dbt_packages/
+logs/
+target/

@@ -1,0 +1,8 @@
+helix_lending:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: output/helix_lending.duckdb
+      schema: main
+      threads: 4

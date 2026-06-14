@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: dim_loans
+    description: One row per cleaned loan.
+    columns:
+      - name: loan_id
+        tests:
+          - not_null
+          - unique
+      - name: product_type
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["personal", "auto", "mortgage", "student"]
+
+  - name: fact_payments
+    description: One row per cleaned payment with a referential integrity flag.
+    columns:
+      - name: payment_id
+        tests:
+          - not_null
+          - unique
+      - name: loan_id
+        tests:
+          - not_null
+
+  - name: loan_payment_summary
+    description: Loan-level payment aggregate table.
+    columns:
+      - name: loan_id
+        tests:
+          - not_null
+          - unique

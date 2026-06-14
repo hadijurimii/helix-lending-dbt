@@ -1,0 +1,12 @@
+flowchart LR
+    loans["data/loans.csv"] --> raw_loans["raw.loans_raw"]
+    payments["data/payments.jsonl"] --> raw_payments["raw.payments_raw"]
+    raw_loans --> core_loans["core.loans_clean"]
+    raw_payments --> core_payments["core.payments_clean"]
+    core_loans --> dim_loans["marts.dim_loans"]
+    core_payments --> fact_payments["marts.fact_payments"]
+    core_loans --> summary["marts.loan_payment_summary"]
+    core_payments --> summary
+    dim_loans --> dq["data_quality_report.json"]
+    fact_payments --> dq
+    summary --> dq

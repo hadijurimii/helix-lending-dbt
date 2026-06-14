@@ -26,6 +26,20 @@ Run tests:
 pytest -q
 ```
 
+Run with Docker:
+
+```powershell
+docker compose up --build helix-pipeline
+```
+
+Run the optional dbt layer after generating the DuckDB database:
+
+```powershell
+python main.py
+dbt run --profiles-dir . --project-dir .
+dbt test --profiles-dir . --project-dir .
+```
+
 The pipeline writes:
 
 - `output/helix_lending.duckdb`
@@ -111,11 +125,25 @@ Basic lineage:
 
 Tests cover date/timestamp parser behavior and one end-to-end fixture that verifies deduplication, amount parsing, JSON flattening, and orphan-payment flagging.
 
+## Repository Structure
+
+- `data/`: source files and data dictionary.
+- `docs/`: architecture, lineage, operations, and interview debrief notes.
+- `infographics/`: Mermaid visuals for architecture and quality findings.
+- `models/`: optional dbt staging and mart models over the DuckDB output.
+- `notebooklm/`: NotebookLM notes and presentation deck.
+- `output/`: generated DuckDB, Parquet, metrics, and quality artifacts.
+- `reports/`: human-readable quality and modeling summaries.
+- `scripts/`: helper commands for pipeline, tests, dbt, and DuckDB inspection.
+- `src/`: Python pipeline implementation.
+- `tests/`: unit and end-to-end tests.
+
 ## Dependencies
 
 - Python: implementation language requested by the assessment.
 - DuckDB: local analytical database, SQL transform engine, and Parquet writer.
 - pytest: small test runner for parser and end-to-end coverage.
+- dbt-duckdb: optional analytics modeling layer over the generated DuckDB database.
 
 ## Known Limitations
 

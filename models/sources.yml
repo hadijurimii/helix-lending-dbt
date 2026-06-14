@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: core
+    schema: core
+    tables:
+      - name: loans_clean
+        description: Cleaned and typed loan records from the Python/DuckDB pipeline.
+      - name: payments_clean
+        description: Cleaned and typed payment records from the Python/DuckDB pipeline.
+
+  - name: marts
+    schema: marts
+    tables:
+      - name: dim_loans
+      - name: fact_payments
+      - name: loan_payment_summary
