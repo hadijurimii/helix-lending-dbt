@@ -1,146 +1,132 @@
-# Helix Lending — Data Engineering Take-Home Assessment
+# Helix Lending Data Pipeline
 
-Welcome, and thank you for taking the time to do this.
+This project builds a local data engineering pipeline for the Helix Lending take-home assessment. It ingests raw loan and payment sources, loads cleaned typed tables, and transforms them into queryable marts in DuckDB and Parquet.
 
-This is a **short, intense** take-home exercise designed to fit into roughly
-**4–5 hours of focused work over a 2-day window**. We've timed and calibrated it.
+## Project Summary
 
-If you find yourself well past that, stop and submit what you have with a note
-in your README about what you would have completed with more time. We won't
-penalize you for stopping; we will absolutely notice if you padded with
-busywork.
+The source data contains loan originations in CSV and payment events in newline-delimited JSON. The messy parts are real enough to matter: duplicate IDs, mixed casing, mixed date formats, dollar-formatted amounts, malformed embedded JSON, missing payment amounts, optional metadata, and payment records that reference loans not present in the loan file.
 
----
+The implemented pipeline keeps the shape simple:
 
-## The scenario
+- `raw`: source-faithful landing tables for auditability.
+- `core`: cleaned and typed tables with normalized categories, parsed dates/timestamps, flattened JSON fields, and duplicate IDs removed by first-seen row.
+- `marts`: modeled outputs for analysis: `dim_loans`, `fact_payments`, and `loan_payment_summary`.
 
-You've just joined the data platform team at **Helix Lending**, a fictional
-consumer lending company. Your first sprint task: stand up a small but
-production-quality pipeline that lands clean, modeled, queryable data from
-two messy sources.
+DuckDB is the storage and transformation engine. It is the right size for this assessment: fast local SQL, native Parquet export, no pretend distributed stack.
 
-The business needs this data to answer questions like:
+## How To Run
 
-- What is our 30-day delinquency rate by loan product?
-- Which customers have payments inconsistent with their loan terms?
-- What is the data freshness and completeness for each source?
-
----
-
-## What we're giving you
-
-Inside the `data/` folder:
-
-- `loans.csv` — ~10,000 loan origination records. Mixed quality: type
-  inconsistencies, duplicates, embedded JSON in one column, occasional
-  oddities.
-- `payments.jsonl` — newline-delimited JSON of payment events. Nested
-  structures. Some events have missing fields. Timestamps in mixed timezones.
-- `data_dictionary.md` — **partial**. Some columns are undocumented on
-  purpose. Decide and document.
-
----
-
-## What you must deliver
-
-1. **A working pipeline** that ingests both sources, transforms them, and
-   lands a modeled output (your choice of star schema, one-big-table, or
-   other — but you must justify the choice in your README).
-
-2. **Data quality checks.** At minimum, freshness, completeness, uniqueness,
-   and referential integrity across the sources. Use any framework or write
-   your own; defend the choice.
-
-3. **Observability.** Structured logging, run metrics (rows in/out, duration,
-   failures), and basic lineage documentation. We need to know what happened
-   on every run.
-
-4. **Tests.** Unit tests for transformation logic and at least one end-to-end
-   test on a small fixture.
-
-5. **A README** that explains: how to run it, your architectural choices and
-   why, known limitations, and what you would do with more time.
-
-6. **An AI Collaboration Log** (`AI_LOG.md`) — see below. **Mandatory.**
-
----
-
-## Tech expectations
-
-- **Language:** Python preferred; SQL where appropriate. Other languages (Rust,
-  Go, Scala) allowed if you justify it in the README.
-- **Storage:** Local files (Parquet/DuckDB) are fine. Cloud is not required
-  and not extra credit.
-- **Orchestration:** Optional. A clean `main.py` is acceptable; a real DAG
-  (Airflow, Prefect, Dagster) is better if sensibly scoped for this size.
-- **Libraries:** No restrictions, but every dependency you add costs you a
-  sentence of justification in the README.
-
----
-
-## GenAI usage — explicit expectations
-
-**You are expected and encouraged to use GenAI tools** (ChatGPT, GitHub
-Copilot, Cursor, Cline, Codeium, any LLM assistant or agent). Candidates who
-do not use GenAI will not be able to complete this task in the time given.
-*That is intentional.* We are hiring engineers who use AI well — not
-engineers who avoid it, and not engineers who paste output unchecked.
-
-You **must** submit an **AI Collaboration Log** (`AI_LOG.md`) containing:
-
-- The major prompts you ran and which tool(s) you used.
-- **At least 2 examples** where the AI was wrong, incomplete, or
-  wrong-but-plausible, and how you caught it.
-- **At least 1 architectural or design decision** you overrode the AI's
-  suggestion on, and why.
-- A **150–200 word reflection**: where did you trust AI in this work? Where
-  did you refuse to? Why?
-
-We will read this log carefully. It is weighted heavily.
-**Submissions without it will not be evaluated.**
-
-A template is provided in `AI_LOG_TEMPLATE.md`. Use it or write your own
-format.
-
----
-
-## What's not allowed
-
-- Copying a public reference implementation of this exercise (we will check).
-- Submitting AI output you cannot explain — see the live debrief below.
-
----
-
-## Submission format
-
-A git repository (private GitHub link) or zip archive containing:
-
-```
-your-submission/
-├── src/                 your pipeline code
-├── tests/               your tests
-├── output/              final modeled data (Parquet or DuckDB file)
-├── README.md
-└── AI_LOG.md
+```powershell
+python main.py
 ```
 
----
+Run tests:
 
-## Live debrief
+```powershell
+pytest -q
+```
 
-After submission, we will allocate **30-minutes** during your first round interview
-to walk us through your solution, we might ask you to extend or modify a piece live, and
-we'll discuss your AI log.
+The pipeline writes:
 
-The debrief is where we calibrate the take-home against the live signal. We
-take it seriously and so should you.
+- `output/helix_lending.duckdb`
+- `output/parquet/raw_loans.parquet`
+- `output/parquet/raw_payments.parquet`
+- `output/parquet/core_loans_clean.parquet`
+- `output/parquet/core_payments_clean.parquet`
+- `output/parquet/dim_loans.parquet`
+- `output/parquet/fact_payments.parquet`
+- `output/parquet/loan_payment_summary.parquet`
+- `output/metrics/run_metrics.json`
+- `output/metrics/data_quality_report.json`
 
----
+## Pipeline Stages
 
-## Questions?
+### Ingest
 
-Reply to the email this assessment was sent with. We're not gatekeepers —
-ask if anything is genuinely ambiguous. The data dictionary is deliberately
-partial; do not ask us to fill it in. Decide and document.
+`data/loans.csv` and `data/payments.jsonl` are landed into `raw.loans_raw` and `raw.payments_raw`. The raw tables preserve source fields and add ingestion metadata.
 
-Good luck.
+Payment JSON is read with an explicit schema. DuckDB's auto inference was too clever with mixed timestamp formats, which is exactly how production bugs dress nicely for the interview.
+
+### Load
+
+The load stage creates `core.loans_clean` and `core.payments_clean`.
+
+Loan cleanup:
+
+- normalizes product, channel, and status casing
+- parses principal amounts including commas and `$`
+- parses origination dates from `%Y-%m-%d`, `%d-%b-%Y`, and `%m/%d/%Y`
+- extracts borrower attributes from embedded JSON when valid
+- keeps malformed borrower JSON as null parsed fields with `borrower_info_valid = false`
+- deduplicates by `loan_id`, keeping the first source row
+
+Payment cleanup:
+
+- parses timestamps into UTC-naive timestamps for consistent querying
+- preserves the original timestamp string
+- flattens payment method and metadata JSON
+- deduplicates by `payment_id`, keeping the first source row
+
+### Transform
+
+The transform stage publishes:
+
+- `marts.dim_loans`: one row per loan with borrower attributes.
+- `marts.fact_payments`: one row per payment with a `loan_exists` referential integrity flag.
+- `marts.loan_payment_summary`: loan-level payment counts, total paid amount, first/last payment timestamps, and invalid payment amount counts.
+
+## Data Quality
+
+The pipeline writes `output/metrics/data_quality_report.json` with checks for:
+
+- freshness: latest raw ingestion timestamps and latest source event dates
+- completeness: missing customer IDs, malformed borrower JSON, missing payment amounts, missing metadata
+- uniqueness: duplicate loan and payment IDs removed
+- referential integrity: payments without matching loans
+
+Latest full run observed:
+
+- raw loans: `10,030`
+- raw payments: `74,786`
+- clean loans: `10,000`
+- clean payments: `74,756`
+- duplicate loans removed: `30`
+- duplicate payments removed: `30`
+- malformed borrower JSON rows: `30`
+- missing customer IDs: `10`
+- missing payment amounts: `75`
+- payments without matching loans: `100`
+- payments missing metadata: `7,405`
+
+## Observability
+
+The pipeline emits structured JSON logs to stdout for each stage and writes run metrics to `output/metrics/run_metrics.json`. Metrics include rows in, rows out, duration, database path, and quality report path.
+
+Basic lineage:
+
+- `data/loans.csv` -> `raw.loans_raw` -> `core.loans_clean` -> `marts.dim_loans` and `marts.loan_payment_summary`
+- `data/payments.jsonl` -> `raw.payments_raw` -> `core.payments_clean` -> `marts.fact_payments` and `marts.loan_payment_summary`
+
+## Tests
+
+Tests cover date/timestamp parser behavior and one end-to-end fixture that verifies deduplication, amount parsing, JSON flattening, and orphan-payment flagging.
+
+## Dependencies
+
+- Python: implementation language requested by the assessment.
+- DuckDB: local analytical database, SQL transform engine, and Parquet writer.
+- pytest: small test runner for parser and end-to-end coverage.
+
+## Known Limitations
+
+- Duplicate conflict handling is first-seen-wins. That is acceptable for exact duplicate source rows, but real conflicting duplicates should be quarantined and reviewed.
+- Naive payment timestamps are treated as already canonical. In production, I would require a source timezone contract.
+- Referential failures are flagged, not dropped. Dropping them would hide a source system issue.
+- The mart is intentionally small. It supports the assessment questions, but not a full lending warehouse.
+
+## With More Time
+
+- Add a quarantine table for invalid records and conflicting duplicates.
+- Add Great Expectations or Soda only if the quality rules grow beyond a few SQL checks.
+- Add incremental loading keyed by source file and event timestamp.
+- Add a delinquency-specific mart once business rules define expected payment schedules and grace periods.

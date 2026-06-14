@@ -1,0 +1,22 @@
+{
+  "generated_at": "2026-06-14T14:55:25.568819+00:00",
+  "freshness": {
+    "latest_loan_ingested_at": "2026-06-14 22:55:20.975981+08:00",
+    "latest_payment_ingested_at": "2026-06-14 22:55:21.169425+08:00",
+    "latest_origination_date": "2025-06-01",
+    "latest_payment_timestamp_utc": "2025-08-01 04:35:00"
+  },
+  "completeness": {
+    "loans_missing_customer_id": 10,
+    "loans_with_malformed_borrower_info": 30,
+    "payments_missing_amount": 75,
+    "payments_missing_metadata": 7405
+  },
+  "uniqueness": {
+    "duplicate_loan_ids_removed": 30,
+    "duplicate_payment_ids_removed": 30
+  },
+  "referential_integrity": {
+    "payments_without_matching_loan": 100
+  }
+}

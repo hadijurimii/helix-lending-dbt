@@ -1,0 +1,32 @@
+{
+  "run_started_at": "2026-06-14T14:55:18.989799+00:00",
+  "run_finished_at": "2026-06-14T14:55:26.436909+00:00",
+  "database_path": "C:\\Users\\Hadi\\Documents\\Codex\\SEEK Interview Prep\\helix_lending_de_assessment\\output\\helix_lending.duckdb",
+  "quality_report_path": "C:\\Users\\Hadi\\Documents\\Codex\\SEEK Interview Prep\\helix_lending_de_assessment\\output\\metrics\\data_quality_report.json",
+  "steps": [
+    {
+      "step": "ingest",
+      "started_at": "2026-06-14T14:55:19.336535+00:00",
+      "finished_at": "2026-06-14T14:55:21.997358+00:00",
+      "duration_seconds": 2.661,
+      "rows_in": 84816,
+      "rows_out": 84816
+    },
+    {
+      "step": "load",
+      "started_at": "2026-06-14T14:55:21.997845+00:00",
+      "finished_at": "2026-06-14T14:55:24.250616+00:00",
+      "duration_seconds": 2.253,
+      "rows_in": 84816,
+      "rows_out": 84756
+    },
+    {
+      "step": "transform",
+      "started_at": "2026-06-14T14:55:24.251075+00:00",
+      "finished_at": "2026-06-14T14:55:25.568390+00:00",
+      "duration_seconds": 1.317,
+      "rows_in": 84756,
+      "rows_out": 84756
+    }
+  ]
+}

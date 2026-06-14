@@ -1,0 +1,17 @@
+[project]
+name = "helix-lending-de-assessment"
+version = "0.1.0"
+description = "Helix Lending data engineering pipeline"
+requires-python = ">=3.13"
+dependencies = [
+    "duckdb>=1.5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
