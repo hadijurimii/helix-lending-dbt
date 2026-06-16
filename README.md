@@ -59,7 +59,7 @@ The pipeline writes:
 
 `data/loans.csv` and `data/payments.jsonl` are landed into `raw.loans_raw` and `raw.payments_raw`. The raw tables preserve source fields and add ingestion metadata.
 
-Payment JSON is read with an explicit schema. DuckDB's auto inference was too clever with mixed timestamp formats, which is exactly how production bugs dress nicely for the interview.
+Payment JSON is read with an explicit schema. DuckDB's auto inference was too clever with mixed timestamp formats.
 
 ### Load
 
